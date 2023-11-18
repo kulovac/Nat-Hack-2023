@@ -6,6 +6,7 @@
 import numpy as np
 import scipy.io.wavfile as wav
 import random
+import Muse_S_reader
 
 def mapFreqBounds(map):
     Flow = map[0]
@@ -43,7 +44,7 @@ def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable 
     time = 5
     waveform = np.sin
 
-    wavetableLength = 8
+    wavetableLength = 64
     wavetable = np.zeros((wavetableLength,))
 
     for i in range(wavetableLength):
@@ -83,12 +84,5 @@ def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTab
 
 
 if __name__ == "__main__":
-    random.seed(100)
-    l1, l2, l3, l4 = [], [], [], []
-    for i in range(8):
-        l1.append(random.random())
-        l2.append(random.random())
-        l3.append(random.random())
-        l4.append(random.random())
-    print(l1)
+    l1, l2, l3, l4 = Muse_S_reader.process_waveform(9,10)
     main([5], [15], [35], [65], l1, l2, l3, l4)
