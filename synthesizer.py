@@ -23,6 +23,7 @@ map1 = [4, 8 , 40, 120]
 map2 = [10, 20, 120, 400]
 map3 = [30, 40, 400, 1000]
 map4 = [60, 70, 1000, 5000]
+notes = [41.2, 43.65, 46.25, 49.0, 51.91, 55.0, 58.27, 61.74, 65.41, 69.3, 73.42, 77.78, 82.41, 87.31, 92.5, 98.0, 103.83, 110.0, 116.54, 123.47, 130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 185.0, 196.0, 207.65, 220.0, 233.08, 246.94, 261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.0, 415.3, 440.0, 466.16, 493.88, 523.25, 554.37, 587.33, 622.25, 659.25, 698.46, 739.99, 783.99, 830.61, 880.0, 932.33, 987.77, 1046.5, 1108.73, 1174.66, 1244.51, 1318.51, 1396.91, 1479.98, 1567.98, 1661.22, 1760.0, 1864.66, 1975.53, 2093.0, 2217.46, 2349.32, 2489.02, 2637.02, 2793.83, 2959.96, 3135.96, 3322.44, 3520.0, 3729.31, 3951.07, 4186.01, 4434.92, 4698.63, 4978.03]
 m1= mapFreqBounds(map1)
 m2 = mapFreqBounds(map2)
 m3 = mapFreqBounds(map3)
@@ -31,14 +32,17 @@ prevOutput = np.empty(0)
 
 def chooseMap(freq):
     if map1[0] <= freq and map1[1] >= freq:
-        return(m1[0] * m1[1] ** freq)
+        preFreq = m1[0] * m1[1] ** freq
     elif map2[0] <= freq and map2[1] >= freq:
-        return(m2[0] * m2[1] ** freq)
+        preFreq = m2[0] * m2[1] ** freq
     elif map3[0] <= freq and map3[1] >= freq:
-        return(m3[0] * m3[1] ** freq)
+        preFreq = m3[0] * m3[1] ** freq
     elif map4[0] <= freq and map4[1] >= freq:
-        return(m4[0] * m4[1] ** freq)
+        preFreq = m4[0] * m4[1] ** freq
+    return(search(preFreq))
 
+def search(freq):
+    
 def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetable : np.ndarray):
     #Main Function
     waveform = np.sin
@@ -60,7 +64,7 @@ def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetabl
     # Attack at 2 means peak volume at 20%, etc.
     attack = 1 # How long until volume peaks
     decay = 4 # How long until sustain is reached
-    sustain = 7 # How long until volume decreases
+    sustain = 5 # How long until volume decreases
     release = 4 # How fast volume drops (exponential)
 
     volume = 10 ** (-gain / 20)
@@ -88,7 +92,7 @@ def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetabl
     return output
 
 def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4):
-    time = 1
+    time = 0.8
     volumeReduction = 20
     for freq in inFreqList1:
         if freq == inFreqList1[0]:
@@ -111,7 +115,7 @@ def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTab
 
 
 if __name__ == "__main__":
-    for i in range(10):
+    for i in range(20):
         a = random.randint(4,8)
         a1 = random.randint(4,8)
         a2 = random.randint(4,8)
