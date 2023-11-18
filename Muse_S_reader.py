@@ -5,19 +5,31 @@ frequency domain while filtering out the 60Hz
 powerline frequency
 """
 
+from brainflow.data_filter import (
+    DataFilter,
+    FilterTypes,
+    AggOperations,
+    WindowFunctions,
+    DetrendOperations,
+)
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import time
+from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
+from Board import Board, get_board_id
 
 SAMPLES_PER_SECOND = 256  # 256Hz sample rate
+board = None
 
 
 def FFT_Filter(signal):
     """
     Computes the FFT of the signal
-    and removes the POWERLINE_FREQ
-    TODO: 
+    and removes the upper frequency
     """
     global SAMPLES_PER_SECOND
+    CUTOFF_FREQ = 50
 
     fft_signal = np.fft.fft(signal)
     freq = np.fft.fftfreq(len(signal), 1 / SAMPLES_PER_SECOND)
@@ -26,7 +38,7 @@ def FFT_Filter(signal):
     freq = freq[1:len(freq)//2]
 
     # cutoff at 50Hz as beta waves do not go past this value
-    max_freq = np.abs(freq - 50).argmin()
+    max_freq = np.abs(freq - CUTOFF_FREQ).argmin()
 
     freq = freq[1:max_freq]
     fft_signal = fft_signal[1:max_freq]
@@ -61,7 +73,22 @@ def read(filename, start, end):
     return (wave1, wave2, wave3, wave4)
 
 
-def process_waveform(start, end, filename="./EEG Data/sample2.csv", debug=False):
+def read_live(interval, filename="sample.csv", debug=False):
+    board_id = 39
+    global SAMPLES_PER_SECOND
+    global board
+
+    if board == None:
+        board = Board(board_id=board_id)
+        time.sleep(2)
+
+    data = board.get_data_quantity(int(interval*SAMPLES_PER_SECOND))
+    exg_channels = board.get_exg_channels()
+
+    return data[exg_channels, :]
+
+
+def process_waveform(start, end, live=False, filename="./EEG Data/sample2.csv", debug=False):
     """
     process the waveforms from start time
     to end time.
@@ -69,7 +96,10 @@ def process_waveform(start, end, filename="./EEG Data/sample2.csv", debug=False)
     as a function of time containing only
     the frequencies in the interval (0Hz, 50Hz].
     """
-    wave1, wave2, wave3, wave4 = read(filename, start, end)
+    if live:
+        wave1, wave2, wave3, wave4 = read_live(end-start)
+    else:
+        wave1, wave2, wave3, wave4 = read(filename, start, end)
 
     if debug:
         plt.plot(wave1)
@@ -96,5 +126,49 @@ def process_waveform(start, end, filename="./EEG Data/sample2.csv", debug=False)
     return (filt_wave1, filt_wave2, filt_wave3, filt_wave4)
 
 
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+xs = np.array([])
+ys = np.array([])
+
+
+def animate(i, xs, ys):
+    w1 = process_waveform(1, 1.1, live=True, debug=False)[0]
+
+    # Add x and y to lists
+    # xs = np.concatenate((xs, np.linspace()))
+    ys = np.concatenate((ys, w1))
+
+    # Limit x and y lists to 20 items
+    # xs = xs[-1000:]
+    ys = ys[-1000:]
+
+    # Draw x and y lists
+    ax.clear()
+    ax.plot(ys)
+
+    # Format plot
+    plt.xticks(rotation=45, ha='right')
+    plt.subplots_adjust(bottom=0.30)
+    plt.title('TMP102 Temperature over Time')
+    plt.ylabel('Temperature (deg C)')
+
+
 if __name__ == "__main__":
-    process_waveform(9, 10, True)
+    # w1 = np.array([])
+    # w2 = np.array([])
+    # w3 = np.array([])
+    # w4 = np.array([])
+
+    # index = 0
+    # while index < 5:
+    #     index += 1
+    #     update = process_waveform(1, 2, live=True, debug=False)
+    #     w1 = np.append(w1, update[0])
+    #     w2 = np.append(w2, update[1])
+    #     w3 = np.append(w3, update[2])
+    #     w4 = np.append(w4, update[3])
+    # plt.plot(w1)
+    # plt.show()
+    ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=1000)
+    plt.show()
