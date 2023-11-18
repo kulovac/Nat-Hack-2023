@@ -64,23 +64,23 @@ def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable 
     return output
 
 def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4):
-    freqList1 = []
-    freqList2 = []
-    freqList3 = []
-    freqList4 = []
-    for freq in inFreqList1:
-        freqList1.append(chooseMap(freq))
-    for freq in inFreqList2:
-        freqList2.append(chooseMap(freq))
-    for freq in inFreqList3:
-        freqList3.append(chooseMap(freq))
-    for freq in inFreqList4:
-        freqList4.append(chooseMap(freq))
-    
     time = 3
     volumeReduction = 20
     numpyArray = [0] #Placeholder for now
-    output = synthesize(time, sampleRate, volumeReduction, freq, numpyArray)
+    for freq in inFreqList1:
+        if freq == inFreqList1[0]:
+            output = synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
+        else:
+            output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
+    for freq in inFreqList2:
+        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
+    for freq in inFreqList3:
+        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
+    for freq in inFreqList4:
+        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
+    
+    output = synthesize(time, sampleRate, volumeReduction, 400, numpyArray)
+    
     wav.write('Audio.wav', sampleRate, output.astype(np.float32))
 
 
