@@ -5,6 +5,7 @@
 
 import numpy as np
 import scipy.io.wavfile as wav
+import random
 
 def mapFreqBounds(map):
     Flow = map[0]
@@ -42,7 +43,7 @@ def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable 
     time = 5
     waveform = np.sin
 
-    wavetableLength = 64
+    wavetableLength = 8
     wavetable = np.zeros((wavetableLength,))
 
     for i in range(wavetableLength):
@@ -63,26 +64,31 @@ def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable 
 
     return output
 
-def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4):
+def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4):
     time = 3
     volumeReduction = 20
-    numpyArray = [0] #Placeholder for now
     for freq in inFreqList1:
         if freq == inFreqList1[0]:
-            output = synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
+            output = synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable1)
         else:
-            output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
+            output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable1)
     for freq in inFreqList2:
-        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
+        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable2)
     for freq in inFreqList3:
-        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
+        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable3)
     for freq in inFreqList4:
-        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), numpyArray)
-    
-    output = synthesize(time, sampleRate, volumeReduction, 400, numpyArray)
+        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable4)
     
     wav.write('Audio.wav', sampleRate, output.astype(np.float32))
 
 
 if __name__ == "__main__":
-    main([5], [15], [35], [65])
+    random.seed(100)
+    l1, l2, l3, l4 = [], [], [], []
+    for i in range(8):
+        l1.append(random.random())
+        l2.append(random.random())
+        l3.append(random.random())
+        l4.append(random.random())
+    print(l1)
+    main([5], [15], [35], [65], l1, l2, l3, l4)
