@@ -73,7 +73,8 @@ def process_waveform(start, end, debug=False):
     Returns four np arrays containing voltage
     as a function of time.
     """
-    wave1, wave2, wave3, wave4 = read("./EEG Data/sample1.csv", start, end)
+    wave1, wave2, wave3, wave4 = read(
+        "./EEG Data/sample2.csv", start, end)
 
     if debug:
         plt.plot(wave1)
@@ -101,4 +102,4 @@ def process_waveform(start, end, debug=False):
 
 
 if __name__ == "__main__":
-    process_waveform(1, 2, True)
+    process_waveform(9, 10, True)
