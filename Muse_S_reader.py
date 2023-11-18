@@ -10,9 +10,6 @@ import matplotlib.pyplot as plt
 
 SAMPLES_PER_SECOND = 256  # 256Hz sample rate
 
-POWERLINE_FREQ = 60
-TOLERANCE = 2
-
 
 def FFT_Filter(signal):
     """
@@ -21,8 +18,6 @@ def FFT_Filter(signal):
     TODO: 
     """
     global SAMPLES_PER_SECOND
-    global POWERLINE_FREQ
-    global TOLERANCE
 
     fft_signal = np.fft.fft(signal)
     freq = np.fft.fftfreq(len(signal), 1 / SAMPLES_PER_SECOND)
@@ -71,7 +66,8 @@ def process_waveform(start, end, debug=False):
     process the waveforms from start time
     to end time.
     Returns four np arrays containing voltage
-    as a function of time.
+    as a function of time containing only
+    the frequencies in the interval (0Hz, 50Hz].
     """
     wave1, wave2, wave3, wave4 = read(
         "./EEG Data/sample2.csv", start, end)
