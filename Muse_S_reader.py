@@ -70,7 +70,7 @@ def normalize(w1,w2,w3,w4):
         w4[i] = w4[i]/max4
     return (w1,w2,w3,w4)
 
-def process_waveform(start, end, filename="./EEG Data/sample2.csv", debug=False):
+def process_waveform(start, end, filename="./EEG Data/sample3-awake.csv", debug=False):
     """
     process the waveforms from start time
     to end time.
