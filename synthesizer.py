@@ -1,7 +1,40 @@
 # Single-Voice Synthesizer
+# input: 4 lists
+# output: some sort of sound file
+# 40 - 120, 120 - 400, 400-1000, 100 - 5000
 
 import numpy as np
 import scipy.io.wavfile as wav
+
+def mapFreqBounds(map):
+    Flow = map[0]
+    Fhigh = map[1]
+    mapLow = map[2]
+    mapHigh = map[3]
+    d = Fhigh / Flow
+    a = (mapLow**d/mapHigh)**(1/(d-1))
+    c = (mapLow / a)**(1/Flow)
+    return (a,c)
+
+sampleRate = 44100
+map1 = [4, 8 , 40, 120]
+map2 = [10, 20, 120, 400]
+map3 = [30, 40, 400, 1000]
+map4 = [60, 70, 1000, 5000]
+m1= mapFreqBounds(map1)
+m2 = mapFreqBounds(map2)
+m3 = mapFreqBounds(map3)
+m4 = mapFreqBounds(map4)
+
+def chooseMap(freq):
+    if map1[0] <= freq and map1[1] >= freq:
+        return(m1[0] * m1[1] ** freq)
+    elif map2[0] <= freq and map2[1] >= freq:
+        return(m2[0] * m2[1] ** freq)
+    elif map3[0] <= freq and map3[1] >= freq:
+        return(m3[0] * m3[1] ** freq)
+    elif map4[0] <= freq and map4[1] >= freq:
+        return(m4[0] * m4[1] ** freq)
 
 def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable : np.ndarray):
     #Main Function
@@ -31,8 +64,9 @@ def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable 
     return output
 
 def main():
-    sampleRate = 44100
-    freq = 440
+    inFreq = float(input())
+    freq = chooseMap(inFreq)
+    print(freq)
     time = 3
     volumeReduction = 20
     numpyArray = [0] #Placeholder for now
