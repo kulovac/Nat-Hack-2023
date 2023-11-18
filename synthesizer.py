@@ -125,20 +125,20 @@ def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetabl
 
     return output
 
-def main2(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4, filename, fullOutput, keysPressed):
+def main2(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4, filename, fullOutput, keysPressed = ['A', 'B', 'C', 'D', 'E', 'F', 'G']):
     time = 1
     volumeReduction = 20
     for freq in inFreqList1:
         if freq == inFreqList1[0]:
-            output = synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable1)
+            output = synthesize(time, sampleRate, volumeReduction, chooseMap(freq, keysPressed), waveTable1)
         else:
-            output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable1)
+            output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq, keysPressed), waveTable1)
     for freq in inFreqList2:
-        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable2)
+        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq, keysPressed), waveTable2)
     for freq in inFreqList3:
-        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable3)
+        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq, keysPressed), waveTable3)
     for freq in inFreqList4:
-        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable4)
+        output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq, keysPressed), waveTable4)
     global prevOutput
     if fullOutput.size == 0:
         fullOutput = output
