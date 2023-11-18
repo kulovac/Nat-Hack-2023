@@ -27,6 +27,7 @@ m1= mapFreqBounds(map1)
 m2 = mapFreqBounds(map2)
 m3 = mapFreqBounds(map3)
 m4 = mapFreqBounds(map4)
+prevOutput = np.empty(0)
 
 def chooseMap(freq):
     if map1[0] <= freq and map1[1] >= freq:
@@ -38,10 +39,8 @@ def chooseMap(freq):
     elif map4[0] <= freq and map4[1] >= freq:
         return(m4[0] * m4[1] ** freq)
 
-def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable : np.ndarray):
+def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetable : np.ndarray):
     #Main Function
-
-    time = 5
     waveform = np.sin
 
     wavetableLength = 64
@@ -50,7 +49,7 @@ def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable 
     for i in range(wavetableLength):
         wavetable[i] = waveform(2* np.pi * i / wavetableLength)
 
-    output = np.zeros((time * sampleRate,))
+    output = np.empty(int(time*sampleRate))
 
     index = 0
     indexIncrement = frequency * wavetableLength / sampleRate
@@ -66,7 +65,7 @@ def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable 
     return output
 
 def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4):
-    time = 3
+    time = 1
     volumeReduction = 20
     for freq in inFreqList1:
         if freq == inFreqList1[0]:
@@ -79,10 +78,20 @@ def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTab
         output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable3)
     for freq in inFreqList4:
         output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable4)
-    
-    wav.write('Audio.wav', sampleRate, output.astype(np.float32))
+    global prevOutput
+    if prevOutput.size == 0:
+        prevOutput = output
+    else:
+        prevOutput = np.append(prevOutput,output)
+    wav.write('Audio1.wav', sampleRate, output.astype(np.float32))
+    wav.write('Audio.wav', sampleRate, prevOutput.astype(np.float32))
 
 
 if __name__ == "__main__":
-    l1, l2, l3, l4 = Muse_S_reader.process_waveform(9,10)
-    main([5], [15], [35], [65], l1, l2, l3, l4)
+    for i in range(10):
+        a = random.randint(4,8)
+        b = random.randint(10,20)
+        c = random.randint(30,40)
+        d = random.randint(60,70)
+        l1, l2, l3, l4 = Muse_S_reader.process_waveform(i,i+1)
+        main([a], [b], [c], [d], l1, l2, l3, l4)
