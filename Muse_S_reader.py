@@ -66,30 +66,39 @@ def read(filename, start, end):
     return (wave1, wave2, wave3, wave4)
 
 
-def process_waveform():
-    wave1, wave2, wave3, wave4 = read("./EEG Data/sample1.csv", 3, 4)
+def process_waveform(start, end, debug=False):
+    """
+    process the waveforms from start time
+    to end time.
+    Returns four np arrays containing voltage
+    as a function of time.
+    """
+    wave1, wave2, wave3, wave4 = read("./EEG Data/sample1.csv", start, end)
 
-    plt.plot(wave1)
-    plt.show()
+    if debug:
+        plt.plot(wave1)
+        plt.show()
 
     fft1, freq1 = FFT_Filter(wave1)
     fft2, freq2 = FFT_Filter(wave1)
     fft3, freq3 = FFT_Filter(wave1)
     fft4, freq4 = FFT_Filter(wave1)
 
-    plt.plot(freq1, np.sqrt(fft1.real ** 2 + fft1.imag ** 2))
-    plt.show()
+    if debug:
+        plt.plot(freq1, np.sqrt(fft1.real ** 2 + fft1.imag ** 2))
+        plt.show()
 
     filt_wave1 = abs(np.fft.ifft(fft1))
     filt_wave2 = abs(np.fft.ifft(fft2))
     filt_wave3 = abs(np.fft.ifft(fft3))
     filt_wave4 = abs(np.fft.ifft(fft4))
 
-    plt.plot(filt_wave1)
-    plt.show()
+    if debug:
+        plt.plot(filt_wave1)
+        plt.show()
 
     return (filt_wave1, filt_wave2, filt_wave3, filt_wave4)
 
 
 if __name__ == "__main__":
-    process_waveform()
+    process_waveform(1, 2, True)
