@@ -80,9 +80,9 @@ def process_waveform(start, end, debug=False):
         plt.show()
 
     fft1, freq1 = FFT_Filter(wave1)
-    fft2, freq2 = FFT_Filter(wave1)
-    fft3, freq3 = FFT_Filter(wave1)
-    fft4, freq4 = FFT_Filter(wave1)
+    fft2, freq2 = FFT_Filter(wave2)
+    fft3, freq3 = FFT_Filter(wave3)
+    fft4, freq4 = FFT_Filter(wave4)
 
     if debug:
         plt.plot(freq1, np.sqrt(fft1.real ** 2 + fft1.imag ** 2))
