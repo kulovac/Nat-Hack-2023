@@ -137,7 +137,7 @@ def main2(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTa
         prevOutput = output
     else:
         prevOutput = np.append(prevOutput,output)
-    wav.write('Audio.wav', sampleRate, fullOutput.astype(np.float32))
+    wav.write('UIPackage/Audio.wav', sampleRate, fullOutput.astype(np.float32))
     wav.write(filename, sampleRate, prevOutput.astype(np.float32))
     return (fullOutput)
 

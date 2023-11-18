@@ -8,8 +8,8 @@ def main():
     i = 0
     while i < 3:
         startTime = time.time()
-        fullOutput = synthesizer.main('Audio1.wav', fullOutput)
-        fullOutput = synthesizer.main('Audio2.wav', fullOutput)
+        fullOutput = synthesizer.main('UIPackage/Audio1.wav', fullOutput)
+        fullOutput = synthesizer.main('UIPackage/Audio2.wav', fullOutput)
         print(time.time() - startTime)
         i += 1
 
