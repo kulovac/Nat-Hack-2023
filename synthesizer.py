@@ -59,20 +59,29 @@ def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetabl
         index += indexIncrement
         index %= wavetableLength
 
-    volume = 10 ** (-gain / 20)
-
     ### ADSR ENVELOPE SETTINGS
-    attack = 3 # How long until volume peaks
-    sustain = 5 # How long until volume decreases
+    attack = 2 # How long until volume peaks
+    decay = 5 # How long until sustain is reached
+    sustain = 6 # How long until volume decreases
 
     volume = 10 ** (-gain / 20)
     for n in range(output.shape[0]):
         if n < (44100 / 10) * attack:
             output[n] *= volume * (((n)/(4410 * attack)))
+        elif n < (44100 / 10) * decay:
+            newVolume = volume / (((n)/(4410 * attack)))
+            if newVolume >= volume * 0.7:
+                output[n] *= newVolume
+            else:
+                output[n] *= volume * 0.7
         elif n < (44100 / 10) * sustain:
-            output[n] *= volume
+            output[n] *= volume * 0.7
         else:
-            output[n] *= volume / ((n)/(4410 * sustain))
+            newVolume = volume / (((n)/(4410 * sustain)))
+            if newVolume <= volume * 0.7:
+                output[n] *= newVolume
+            else:
+                output[n] *= volume * 0.7
 
     ### END ADSR ENVELOPE SETTINGS
     #TO REVERT, REPLACE ABOVE LOOP WITH: output *= volume
