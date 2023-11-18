@@ -63,10 +63,20 @@ def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable 
 
     return output
 
-def main():
-    inFreq = float(input())
-    freq = chooseMap(inFreq)
-    print(freq)
+def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4):
+    freqList1 = []
+    freqList2 = []
+    freqList3 = []
+    freqList4 = []
+    for freq in inFreqList1:
+        freqList1.append(chooseMap(freq))
+    for freq in inFreqList2:
+        freqList2.append(chooseMap(freq))
+    for freq in inFreqList3:
+        freqList3.append(chooseMap(freq))
+    for freq in inFreqList4:
+        freqList4.append(chooseMap(freq))
+    
     time = 3
     volumeReduction = 20
     numpyArray = [0] #Placeholder for now
@@ -75,4 +85,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main([5], [15], [35], [65])
