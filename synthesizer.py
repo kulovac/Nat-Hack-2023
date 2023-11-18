@@ -42,7 +42,7 @@ def chooseMap(freq):
     return(search(preFreq))
 
 def search(freq):
-    
+
 def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetable : np.ndarray):
     #Main Function
     waveform = np.sin
@@ -91,7 +91,7 @@ def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetabl
 
     return output
 
-def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4):
+def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4, filename, fullOutput):
     time = 0.8
     volumeReduction = 20
     for freq in inFreqList1:
@@ -106,12 +106,15 @@ def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTab
     for freq in inFreqList4:
         output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable4)
     global prevOutput
+    if fullOutput.size == 0:
+        fullOutput = output
     if prevOutput.size == 0:
         prevOutput = output
     else:
         prevOutput = np.append(prevOutput,output)
-    wav.write('Audio1.wav', sampleRate, output.astype(np.float32))
-    wav.write('Audio.wav', sampleRate, prevOutput.astype(np.float32))
+    wav.write('Audio', sampleRate, fullOutput.astype(np.float32))
+    wav.write(filename, sampleRate, prevOutput.astype(np.float32))
+    return (fullOutput)
 
 
 if __name__ == "__main__":
