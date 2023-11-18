@@ -44,6 +44,8 @@ prevOutput = np.empty(0)
 
 def chooseMap(freq, keysPressed):
     notes = []
+    if keysPressed == []:
+        keysPressed = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'A#/Bb', 'F#/Gb', 'C#/Db','D#/Eb','G#/Ab']
     for key in keysPressed:
         notes += notesList[key]
     if map1[0] <= freq and map1[1] >= freq:
@@ -125,7 +127,7 @@ def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetabl
 
     return output
 
-def main2(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4, filename, fullOutput, keysPressed = ['A', 'B', 'C', 'D', 'E', 'F', 'G']):
+def main2(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4, filename, fullOutput, keysPressed):
     time = 1
     volumeReduction = 20
     for freq in inFreqList1:
