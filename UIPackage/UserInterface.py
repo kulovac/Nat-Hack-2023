@@ -2,11 +2,17 @@
 import tkinter as tk
 import pygame
 
+track = False
+
 playing = False
 
 pygame.mixer.init()
 
-pygame.mixer.music.load('UIpackage/Audio1.wav')
+
+if(track == False):
+    pygame.mixer.music.load('UIpackage/Audio1.wav')
+else:
+    pygame.mixer.music.load('UIpackage/Audio2.wav')
 root = tk.Tk()
 
 
@@ -27,8 +33,7 @@ def playandPause():
 
     playing = not playing
     
-# def play():
-#     music.play()
+
 
 def stop():
     global playing
@@ -36,8 +41,6 @@ def stop():
     playing = False
     playButton.config(text="PLAY",command=playandPause)
 
-# def pause():
-#     music.pause()
 
 def status():
     global playing
@@ -53,15 +56,26 @@ buttonFrame = tk.Frame(root)
 buttonFrame.pack(side=tk.BOTTOM, pady=40)
 
 playButton = tk.Button(buttonFrame, text = "PLAY", command= playandPause, height = 5, width = 20)
-#pauseButton = tk.Button(buttonFrame, text = "PAUSE", command= pause, height = 5, width = 20)
 stopButton = tk.Button(buttonFrame, text = "STOP", command= stop, height = 5, width = 20)
 
 
 playButton.pack(side=tk.LEFT, padx=10)  
-#pauseButton.pack(side=tk.LEFT, padx=10)
 stopButton.pack(side=tk.LEFT, padx=10)
 
+left = tk.Frame(root)
+left.pack(side=tk.LEFT, padx=10)
+
+leftText = tk.Label(left,text="Choose Key",font = ('Comic Sans MS',24))
+leftText.pack()
+
+buttonLabels = ('A','B','C','D','E','F','G','A#/Bb','F#/Gb','C#/Db','G#/Ab')
+
+for key in buttonLabels:
+    button = tk.Button(left,text = key,height=1,width=10)
+    button.pack(pady=1)
+
 status()
+track = not track
 root.mainloop()
 
 
