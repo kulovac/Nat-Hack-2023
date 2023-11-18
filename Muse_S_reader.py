@@ -60,6 +60,15 @@ def read(filename, start, end):
 
     return (wave1, wave2, wave3, wave4)
 
+def normalize(w1,w2,w3,w4):
+    aw1, aw2, aw3, aw4 = abs(w1), abs(w2), abs(w3), abs(w4)
+    max1, max2, max3, max4 = max(aw1), max(aw2), max(aw3), max(aw4)
+    for i in range(len(w1)):
+        w1[i] = w1[i]/max1
+        w2[i] = w2[i]/max2
+        w3[i] = w3[i]/max3
+        w4[i] = w4[i]/max4
+    return (w1,w2,w3,w4)
 
 def process_waveform(start, end, filename="./EEG Data/sample2.csv", debug=False):
     """
@@ -83,17 +92,16 @@ def process_waveform(start, end, filename="./EEG Data/sample2.csv", debug=False)
     if debug:
         plt.plot(freq1, np.sqrt(fft1.real ** 2 + fft1.imag ** 2))
         plt.show()
-
-    filt_wave1 = abs(np.fft.ifft(fft1))
-    filt_wave2 = abs(np.fft.ifft(fft2))
-    filt_wave3 = abs(np.fft.ifft(fft3))
-    filt_wave4 = abs(np.fft.ifft(fft4))
-
+    filt_wave1 = np.fft.ifft(fft1)
+    filt_wave2 = np.fft.ifft(fft2)
+    filt_wave3 = np.fft.ifft(fft3)
+    filt_wave4 = np.fft.ifft(fft4)
+    
     if debug:
         plt.plot(filt_wave1)
         plt.show()
 
-    return (filt_wave1, filt_wave2, filt_wave3, filt_wave4)
+    return (normalize(filt_wave1,filt_wave2,filt_wave3,filt_wave4))
 
 
 if __name__ == "__main__":

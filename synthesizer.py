@@ -6,6 +6,7 @@
 import numpy as np
 import scipy.io.wavfile as wav
 import random
+import Muse_S_reader
 
 def mapFreqBounds(map):
     Flow = map[0]
@@ -26,6 +27,7 @@ m1= mapFreqBounds(map1)
 m2 = mapFreqBounds(map2)
 m3 = mapFreqBounds(map3)
 m4 = mapFreqBounds(map4)
+prevOutput = np.empty(0)
 
 def chooseMap(freq):
     if map1[0] <= freq and map1[1] >= freq:
@@ -37,19 +39,13 @@ def chooseMap(freq):
     elif map4[0] <= freq and map4[1] >= freq:
         return(m4[0] * m4[1] ** freq)
 
-def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable : np.ndarray):
+def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetable : np.ndarray):
     #Main Function
-
-    time = 5
     waveform = np.sin
 
-    wavetableLength = 8
-    wavetable = np.zeros((wavetableLength,))
+    wavetableLength = wavetable.size
 
-    for i in range(wavetableLength):
-        wavetable[i] = waveform(2* np.pi * i / wavetableLength)
-
-    output = np.zeros((time * sampleRate,))
+    output = np.empty(int(time*sampleRate))
 
     index = 0
     indexIncrement = frequency * wavetableLength / sampleRate
@@ -59,13 +55,40 @@ def synthesize(time: int, sampleRate: int, gain: int, frequency: int, wavetable 
         index += indexIncrement
         index %= wavetableLength
 
+    ### ADSR ENVELOPE SETTINGS
+    #Attack, Decay, Sustain are 10% increments of clip
+    # Attack at 2 means peak volume at 20%, etc.
+    attack = 1 # How long until volume peaks
+    decay = 4 # How long until sustain is reached
+    sustain = 7 # How long until volume decreases
+    release = 4 # How fast volume drops (exponential)
+
     volume = 10 ** (-gain / 20)
-    output *= volume
+    for n in range(output.shape[0]):
+        if n < (44100 / 10) * attack:
+            output[n] *= volume * (((n)/(4410 * attack)))
+        elif n < (44100 / 10) * decay:
+            newVolume = volume / (((n)/(4410 * attack)))
+            if newVolume >= volume * 0.7:
+                output[n] *= newVolume
+            else:
+                output[n] *= volume * 0.7
+        elif n < (44100 / 10) * sustain:
+            output[n] *= volume * 0.7
+        else:
+            newVolume = volume / ((((n)/(4410 * sustain)))**release)
+            if newVolume <= volume * 0.7:
+                output[n] *= newVolume
+            else:
+                output[n] *= volume * 0.7
+
+    ### END ADSR ENVELOPE SETTINGS
+    #TO REVERT, REPLACE ABOVE LOOP WITH: output *= volume
 
     return output
 
 def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTable2, waveTable3, waveTable4):
-    time = 3
+    time = 1
     volumeReduction = 20
     for freq in inFreqList1:
         if freq == inFreqList1[0]:
@@ -78,17 +101,28 @@ def main(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTab
         output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable3)
     for freq in inFreqList4:
         output += synthesize(time, sampleRate, volumeReduction, chooseMap(freq), waveTable4)
-    
-    wav.write('Audio.wav', sampleRate, output.astype(np.float32))
+    global prevOutput
+    if prevOutput.size == 0:
+        prevOutput = output
+    else:
+        prevOutput = np.append(prevOutput,output)
+    wav.write('Audio1.wav', sampleRate, output.astype(np.float32))
+    wav.write('Audio.wav', sampleRate, prevOutput.astype(np.float32))
 
 
 if __name__ == "__main__":
-    random.seed(100)
-    l1, l2, l3, l4 = [], [], [], []
-    for i in range(8):
-        l1.append(random.random())
-        l2.append(random.random())
-        l3.append(random.random())
-        l4.append(random.random())
-    print(l1)
-    main([5], [15], [35], [65], l1, l2, l3, l4)
+    for i in range(10):
+        a = random.randint(4,8)
+        a1 = random.randint(4,8)
+        a2 = random.randint(4,8)
+        b = random.randint(10,20)
+        b1 = random.randint(10,20)
+        b2 = random.randint(10,20)
+        c = random.randint(30,40)
+        c1 = random.randint(30,40)
+        c2 = random.randint(30,40)
+        d = random.randint(60,70)
+        d1 = random.randint(60,70)
+        d2 = random.randint(60,70)
+        l1, l2, l3, l4 = Muse_S_reader.process_waveform(i/4,(i+1)/4)
+        main([a, a1, a2], [b, b1, b2], [c, c1, c2], [d, d1, d2], l1, l2, l3, l4)
