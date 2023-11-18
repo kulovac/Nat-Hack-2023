@@ -61,7 +61,7 @@ def read(filename, start, end):
     return (wave1, wave2, wave3, wave4)
 
 
-def process_waveform(start, end, debug=False):
+def process_waveform(start, end, filename="./EEG Data/sample2.csv", debug=False):
     """
     process the waveforms from start time
     to end time.
@@ -69,8 +69,7 @@ def process_waveform(start, end, debug=False):
     as a function of time containing only
     the frequencies in the interval (0Hz, 50Hz].
     """
-    wave1, wave2, wave3, wave4 = read(
-        "./EEG Data/sample2.csv", start, end)
+    wave1, wave2, wave3, wave4 = read(filename, start, end)
 
     if debug:
         plt.plot(wave1)
