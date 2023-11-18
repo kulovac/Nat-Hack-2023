@@ -60,9 +60,12 @@ def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetabl
         index %= wavetableLength
 
     ### ADSR ENVELOPE SETTINGS
-    attack = 2 # How long until volume peaks
-    decay = 5 # How long until sustain is reached
-    sustain = 6 # How long until volume decreases
+    #Attack, Decay, Sustain are 10% increments of clip
+    # Attack at 2 means peak volume at 20%, etc.
+    attack = 3 # How long until volume peaks
+    decay = 7 # How long until sustain is reached
+    sustain = 9 # How long until volume decreases
+    release = 4 # How fast volume drops (exponential)
 
     volume = 10 ** (-gain / 20)
     for n in range(output.shape[0]):
@@ -77,7 +80,7 @@ def synthesize(time: float, sampleRate: int, gain: int, frequency: int, wavetabl
         elif n < (44100 / 10) * sustain:
             output[n] *= volume * 0.7
         else:
-            newVolume = volume / (((n)/(4410 * sustain)))
+            newVolume = volume / ((((n)/(4410 * sustain)))**release)
             if newVolume <= volume * 0.7:
                 output[n] *= newVolume
             else:
