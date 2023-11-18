@@ -9,8 +9,6 @@ def mapFreq(Flow, Fhigh, mapLow, mapHigh, freq):
     
     return (a, c, a * c**freq)
 
-print(mapFreq(4, 8, 40, 120, 8))
-
 
 volume = 0.5  # range [0.0, 1.0]
 fs = 44100  # sampling rate, Hz, must be integer
