@@ -1,8 +1,7 @@
 import numpy as np
 import tkinter as tk
 import pygame
-import time
-import synthesizer
+
 
 track = False
 flag = False
