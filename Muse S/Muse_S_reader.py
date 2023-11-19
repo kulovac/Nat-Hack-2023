@@ -48,7 +48,7 @@ def FFT_Filter(signal):
     temporary = fft_signal.copy()
     for _ in range(3):
         index = temporary.argmax()
-        peak_freq.append(freq[index])
+        peak_freq = np.append(peak_freq, freq[index])
         temporary[index-TOLERANCE: index+TOLERANCE] = 0
 
     return (fft_signal, peak_freq)
