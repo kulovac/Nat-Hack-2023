@@ -30,20 +30,28 @@ def FFT_Filter(signal):
     """
     global SAMPLES_PER_SECOND
     CUTOFF_FREQ = 50
+    TOLERANCE = 2
 
     fft_signal = np.fft.fft(signal)
     freq = np.fft.fftfreq(len(signal), 1 / SAMPLES_PER_SECOND)
+    peak_freq = np.array([])
 
     fft_signal = fft_signal[1:len(signal)//2]
     freq = freq[1:len(freq)//2]
 
     # cutoff at 50Hz as beta waves do not go past this value
-    max_freq = np.abs(freq - CUTOFF_FREQ).argmin()
+    cutoff_index = np.abs(freq - CUTOFF_FREQ).argmin()
 
-    freq = freq[1:max_freq]
-    fft_signal = fft_signal[1:max_freq]
+    freq = freq[1:cutoff_index]
+    fft_signal = fft_signal[1:cutoff_index]
 
-    return (fft_signal, freq)
+    temporary = fft_signal.copy()
+    for _ in range(3):
+        index = temporary.argmax()
+        peak_freq.append(freq[index])
+        temporary[index-TOLERANCE: index+TOLERANCE] = 0
+
+    return (fft_signal, peak_freq)
 
 
 def read(filename, start, end):
@@ -73,7 +81,7 @@ def read(filename, start, end):
     return (wave1, wave2, wave3, wave4)
 
 
-def read_live(interval, filename="sample.csv", debug=False):
+def read_live(interval):
     board_id = 39
     global SAMPLES_PER_SECOND
     global board
@@ -124,6 +132,7 @@ def process_waveform(start, end, live=False, filename="./EEG Data/sample3-awake.
     if debug:
         plt.plot(freq1, np.sqrt(fft1.real ** 2 + fft1.imag ** 2))
         plt.show()
+
     filt_wave1 = np.fft.ifft(fft1)
     filt_wave2 = np.fft.ifft(fft2)
     filt_wave3 = np.fft.ifft(fft3)
@@ -133,7 +142,7 @@ def process_waveform(start, end, live=False, filename="./EEG Data/sample3-awake.
         plt.plot(filt_wave1)
         plt.show()
 
-    return (normalize(filt_wave1, filt_wave2, filt_wave3, filt_wave4))
+    return (normalize(filt_wave1, filt_wave2, filt_wave3, filt_wave4), (freq1, freq2, freq3, freq4))
 
 
 fig = plt.figure()
