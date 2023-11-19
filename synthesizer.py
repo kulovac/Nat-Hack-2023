@@ -19,10 +19,10 @@ def mapFreqBounds(map):
     return (a,c)
 
 sampleRate = 44100
-map1 = [4, 8 , 40, 120]
-map2 = [10, 20, 120, 400]
-map3 = [30, 40, 400, 1000]
-map4 = [60, 70, 1000, 5000]
+map1 = [1, 8 , 40, 120]
+map2 = [8, 30, 120, 400]
+map3 = [30, 60, 400, 1000]
+map4 = [60, 999, 1000, 5000]
 # C Major
 notesList = {'A': [55.0, 110.0, 220.0, 440.0, 880.0, 1760.0, 3520.0], 
              'B': [61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07], 
@@ -150,30 +150,35 @@ def main2(inFreqList1, inFreqList2, inFreqList3, inFreqList4, waveTable1, waveTa
         prevOutput = output
     else:
         prevOutput = np.append(prevOutput,output)
-    wav.write('UIPackage/Audio.wav', sampleRate, fullOutput.astype(np.float32))
+    wav.write('Audio.wav', sampleRate, fullOutput.astype(np.float32))
     wav.write(filename, sampleRate, prevOutput.astype(np.float32))
     return (fullOutput)
 
 def main(filename, fullOutput):
     global prevOutput
     prevOutput = np.empty(0)
-    keysPressed = ['D', 'A', 'F#/Gb', 'C#/Db']
-    for i in range(10):
-        a = random.randint(4,8)
-        a1 = random.randint(4,8)
-        a2 = random.randint(4,8)
-        b = random.randint(10,20)
-        b1 = random.randint(10,20)
-        b2 = random.randint(10,20)
-        c = random.randint(30,40)
-        c1 = random.randint(30,40)
-        c2 = random.randint(30,40)
-        d = random.randint(60,70)
-        d1 = random.randint(60,70)
-        d2 = random.randint(60,70)
-        l1, l2, l3, l4 = Muse_S_reader.process_waveform(i/4,(i+1)/4)
+    keysPressed = ['D', 'F', 'A']
+    for i in range(3):
+        # a = random.randint(4,8)
+        # a1 = random.randint(4,8)
+        # a2 = random.randint(4,8)
+        # b = random.randint(10,20)
+        # b1 = random.randint(10,20)
+        # b2 = random.randint(10,20)
+        # c = random.randint(30,40)
+        # c1 = random.randint(30,40)
+        # c2 = random.randint(30,40)
+        # d = random.randint(60,70)
+        # d1 = random.randint(60,70)
+        # d2 = random.randint(60,70)
+        # l1, l2, l3, l4 = Muse_S_reader.process_waveform(i/4,(i+1)/4)
+        a, a1, a2 = Muse_S_reader.process_waveform(i, i+1)[1][0]
+        b, b1, b2 = Muse_S_reader.process_waveform(i, i+1)[1][1]
+        c, c1, c2 = Muse_S_reader.process_waveform(i, i+1)[1][2]
+        d, d1, d2 = Muse_S_reader.process_waveform(i, i+1)[1][3]
+        l1, l2, l3, l4 = Muse_S_reader.process_waveform(i, i+ 1)[0]
         fullOutput = main2([a, a1, a2], [b, b1, b2], [c, c1, c2], [d, d1, d2], l1, l2, l3, l4, filename, fullOutput, keysPressed)
     return(fullOutput)
 
 if __name__ == "__main__":
-    a = main()
+    a = main('audio1.wav', np.empty(0))
