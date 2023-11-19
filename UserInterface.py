@@ -1,7 +1,8 @@
 import numpy as np
 import tkinter as tk
 import pygame
-
+import threading
+import os
 
 track = False
 flag = False
@@ -10,6 +11,8 @@ playing = False
 keyspressedArray = []
 pygame.mixer.init()
 
+SONG_END = pygame.USEREVENT + 1
+pygame.mixer.music.set_endevent(SONG_END)
 
 if(track == False):
     pygame.mixer.music.load('Audio1.wav')
@@ -24,18 +27,23 @@ root.configure(bg='#191414')
 
 label = tk.Label(root, text="Brainify", font= ('Comic Sans MS', 36), fg='white', bg='#191414')
 
-def playandPause():
+def playandPause(switcher = 0):
     global playing
+
+    #if switcher == 0:
     if playing:
-        #play(True)
-        pygame.mixer.music.pause()
-        playButton.config(text="PLAY",command=playandPause)
+            #play(True)
+            pygame.mixer.music.pause()
+            playButton.config(text="PLAY",command=playandPause)
     else:
-        #play(False)
-        pygame.mixer.music.play()
-        playButton.config(text="PAUSE",command=playandPause)
+            #play(False)
+            pygame.mixer.music.play()
+            playButton.config(text="PAUSE",command=playandPause)
 
     playing = not playing
+    #else:
+        #if playing:
+            
     
 # def play(flag):
 #     while not flag:
@@ -64,6 +72,9 @@ def status():
 
 def insertelm(key):
     keyspressedArray.append(key)
+    with open('keys.txt', 'w') as f:
+        for item in keyspressedArray:
+            f.write("%s\n" % item)
 
 label.pack()
 buttonFrame = tk.Frame(root)
@@ -90,8 +101,27 @@ for i,key in enumerate (buttonLabels):
     button.grid(row=1, column=i, padx=1, pady=1)
 
 status()
-track = not track
+
+def check_music():
+    while True:
+        for event in pygame.event.get():
+            if event.type == SONG_END:
+                # Switch track when a song ends
+                track = not track
+                if(track == False):
+                    pygame.mixer.music.load('Audio1.wav')
+                else:
+                    pygame.mixer.music.load('Audio2.wav')
+                pygame.mixer.music.play()
+                keyspressedArray.clear()
+
+music_thread = threading.Thread(target=check_music)
+music_thread.start()
+
 root.mainloop()
+
+
+
 
 
 
