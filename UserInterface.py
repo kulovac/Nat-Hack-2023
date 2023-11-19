@@ -114,6 +114,8 @@ def check_music():
                     pygame.mixer.music.load('Audio2.wav')
                 pygame.mixer.music.play()
                 keyspressedArray.clear()
+                with open('keys.txt', 'w') as f:
+                    f.write('')
 
 music_thread = threading.Thread(target=check_music)
 music_thread.start()
